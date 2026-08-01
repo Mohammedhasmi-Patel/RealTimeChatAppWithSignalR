@@ -7,6 +7,11 @@ namespace ChatApp.Infrastructure.Database;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
 {
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+    {
+    }
+
     public DbSet<ApplicationUser> ApplicationUser { get; set; } = null!;
     public DbSet<ApplicationRole> ApplicationRole { get; set; } = null!;
 
