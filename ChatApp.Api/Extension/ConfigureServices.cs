@@ -1,4 +1,5 @@
 using ChatApp.Application.DTO.Auth.Validators;
+using ChatApp.Application.DTO.FileStorage;
 using ChatApp.Infrastructure.Database;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,22 @@ public static class ConfigureServices
     {
         service.AddControllers()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterUserRequestValidator>());
+
+        #region Swagger Stuff
         service.AddEndpointsApiExplorer();
         service.AddSwaggerGen();
+        #endregion
+        #region Database Stuff
+
+        #region file storage stuff
+        service.Configure<FileUploadRequest>(configuration.GetSection("FileStorage"));
+        // service.AddScoped<IFileStorageService, LocalFileStorageService>();
+
+        #endregion
         string databaseUrl = configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("Dburl not found");
         service.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(databaseUrl));
+        #endregion
+
         return service;
     }
 }
