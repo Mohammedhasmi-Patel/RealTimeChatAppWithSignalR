@@ -20,4 +20,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Message> Messages { get; set; }
     public DbSet<Friend> Friends { get; set; }
     public DbSet<FriendRequest> FriendRequests { get; set; }
+    public DbSet<ErrorLog> ErrorLogs { get; set; }
 }
