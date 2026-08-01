@@ -2,7 +2,6 @@ using ChatApp.Api.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.ConfigureAllServices(builder.Configuration);
 var app = builder.Build();
