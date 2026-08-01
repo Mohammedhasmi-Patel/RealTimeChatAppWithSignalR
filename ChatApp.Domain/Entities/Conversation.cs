@@ -1,11 +1,13 @@
 ﻿
+using ChatApp.Domain.Enum;
+
 namespace ChatApp.Domain.Entities
 {
     public class Conversation
     {
         public Guid Id { get; set; }
 
-        public ConversationType Type { get; set; }
+        public ConversationTypeEnum Type { get; set; }
 
         public string? Title { get; set; }
 
@@ -19,8 +21,7 @@ namespace ChatApp.Domain.Entities
 
 
         // Navigation Properties
-
-        public ICollection<ConversationMember> Members { get; set; } = new List<ConversationMember>();
+        public ICollection<ConversationParticipant> Members { get; set; } = new List<ConversationParticipant>();
 
         public ICollection<Message> Messages { get; set; } = new List<Message>();
 

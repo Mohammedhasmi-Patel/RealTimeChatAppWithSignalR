@@ -8,4 +8,7 @@
     <Project Path="ChatApp.Infrastructure/ChatApp.Infrastructure.csproj" Id="e61c6be8-b64e-42b7-8031-220582dcd60c" />
   </Folder>
   <Folder Name="/tests/" />
+  <Folder Name="/src/WebApi/">
+    <Project Path="ChatApp.Api/ChatApp.Api.csproj" Id="0d1929c3-7362-4c67-b01e-1c32c85dbace" />
+  </Folder>
 </Solution>

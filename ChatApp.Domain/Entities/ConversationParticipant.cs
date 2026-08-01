@@ -1,4 +1,6 @@
 ﻿
+using ChatApp.Domain.Enum;
+
 namespace ChatApp.Domain.Entities
 {
     public class ConversationParticipant
@@ -9,7 +11,7 @@ namespace ChatApp.Domain.Entities
 
         public Guid UserId { get; set; }
 
-        public ConversationParticipantRole Role { get; set; } = ConversationParticipantRole.User;
+        public ConversationParticipantRoleEnum Role { get; set; } = ConversationParticipantRoleEnum.User;
 
         public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
 
