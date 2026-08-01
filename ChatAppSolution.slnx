@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Core/">
+    <Project Path="ChatApp.Application/ChatApp.Application.csproj" Id="5dff2a83-f17c-4726-977c-3a7f8e4e1b7f" />
+    <Project Path="ChatApp.Domain/ChatApp.Domain.csproj" Id="5fc40271-afc2-4dfa-9a9c-5c3fd688ad46" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="ChatApp.Infrastructure/ChatApp.Infrastructure.csproj" Id="e61c6be8-b64e-42b7-8031-220582dcd60c" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
