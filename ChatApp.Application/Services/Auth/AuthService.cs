@@ -1,4 +1,6 @@
 using ChatApp.Application.DTO.Auth.Requests;
+using ChatApp.Application.DTO.Auth.Response;
+using ChatApp.Application.DTO.Common;
 using ChatApp.Application.Exceptions;
 using ChatApp.Application.RepositoryContracts.Auth;
 using ChatApp.Application.ServiceContracts.Auth;
@@ -15,7 +17,13 @@ public class AuthService : IAuthService
     }
     public async Task<object> RegisterUserAsync(RegisterUserRequest request)
     {
-        throw new NotImplementedException();
+        AddUserResponse result = await _authRepository.AddUserAsync(request);
+
+        if (!result.Success)
+        {
+            throw new BadRequestException("Something went wrong while adding the user");
+        }
+        return ApiResponse<object>.SuccessResponse(null,201,"User created successfully.");
     }
 
 }

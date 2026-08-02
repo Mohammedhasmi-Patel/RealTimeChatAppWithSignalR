@@ -1,6 +1,8 @@
 using ChatApp.Application.DTO.Auth.Validators;
 using ChatApp.Application.DTO.FileStorage;
+using ChatApp.Application.ServiceContracts.Storage;
 using ChatApp.Infrastructure.Database;
+using ChatApp.Infrastructure.Services;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +28,8 @@ public static class ConfigureServices
         string databaseUrl = configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("Dburl not found");
         service.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(databaseUrl));
         #endregion
+
+        service.AddScoped<IFileStorageService,FileStorageService>();
 
         return service;
     }
