@@ -1,4 +1,5 @@
 using ChatApp.Application.DTO.Auth.Validators;
+using ChatApp.Application.DTO.Common;
 using ChatApp.Application.DTO.FileStorage;
 using ChatApp.Application.RepositoryContracts.Auth;
 using ChatApp.Application.ServiceContracts.Auth;
@@ -8,6 +9,7 @@ using ChatApp.Infrastructure.Repositories;
 using ChatApp.Infrastructure.UserModels;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp.Api.Extension;
@@ -17,6 +19,18 @@ public static class ConfigureServices
     {
         service.AddHttpContextAccessor();
         service.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory = context =>
+                    {
+                        string firstMessage = context.ModelState.Where(e => e.Value.Errors.Count > 0)
+                                                                .Select(e => e.Value!.Errors.FirstOrDefault()?.ErrorMessage)
+                                                                .FirstOrDefault() ?? "Validation Error";
+
+                        return new BadRequestObjectResult(ApiResponse<object>.FailureResponse(422,firstMessage));
+
+                    };
+                })
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterUserRequestValidator>());
 
         #region Swagger Stuff

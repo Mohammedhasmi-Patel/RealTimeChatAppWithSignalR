@@ -77,6 +77,12 @@ public class AuthRepository : IAuthRepository
         return existingUser is not null;
     }
 
+    public async Task<LoginUserResponse> LoginUserAsync(LoginUserRequest request)
+    {
+        
+    }
+
+
     private async Task<string> GenerateUserName(string firstName, string lastName)
     {
         var baseUserName = $"{firstName.Trim().ToLower()}.{lastName.Trim().ToLower()}";

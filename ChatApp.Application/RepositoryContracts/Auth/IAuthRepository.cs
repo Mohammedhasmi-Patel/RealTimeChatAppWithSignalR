@@ -7,5 +7,6 @@ public interface IAuthRepository
 {
     Task<bool> EmailExistsAsync(string email);
     Task<AddUserResponse> AddUserAsync(RegisterUserRequest request);
+    Task<LoginUserResponse> LoginUserAsync(LoginUserRequest request);
 
 }

@@ -9,19 +9,29 @@ public class RegisterUserRequestValidator : AbstractValidator<RegisterUserReques
     {
         RuleFor(x => x.FirstName)
                 .NotEmpty()
-                .MaximumLength(50);
+                .WithMessage("First name is required.")
+                .MaximumLength(50)
+                .WithMessage("First name cannot exceed 50 characters.");
+
 
         RuleFor(x => x.LastName)
             .NotEmpty()
-            .MaximumLength(50);
+            .WithMessage("Last name is required.")
+            .MaximumLength(50)
+            .WithMessage("Last name cannot exceed 50 characters.");
+
 
         RuleFor(x => x.Email)
             .NotEmpty()
-            .EmailAddress();
+            .WithMessage("Email is required.")
+            .EmailAddress()
+            .WithMessage("Please enter a valid email address.");
 
         RuleFor(x => x.Password)
             .NotEmpty()
-            .MinimumLength(6);
+            .WithMessage("Password is required.")
+            .MinimumLength(8)
+            .WithMessage("Password must be at least 6 characters.");
 
         RuleFor(x => x.Avatar)
             .Must(x => x is null || x.Length <= 2 * 1024 * 1024)

@@ -15,6 +15,13 @@ public class AuthService : IAuthService
     {
         _authRepository = authRepository;
     }
+
+    public Task<ApiResponse<LoginUserResponse>> LoginUserAsync(LoginUserRequest request)
+    {
+        throw new NotImplementedException();
+    }
+
+
     public async Task<object> RegisterUserAsync(RegisterUserRequest request)
     {
         AddUserResponse result = await _authRepository.AddUserAsync(request);
