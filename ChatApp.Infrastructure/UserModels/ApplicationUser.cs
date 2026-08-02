@@ -8,8 +8,8 @@ public class ApplicationUser : IdentityUser<Guid>
     public string LastName { get; set; } = string.Empty;
 
     public string Avatar { get; set; } = string.Empty;
-    public string Bio { get; set; } = string.Empty;
-    public string StatusMessage { get; set; } = string.Empty;
+    public string? Bio { get; set; }
+    public string? StatusMessage { get; set; }
 
     public DateTime? LastSeenAt { get; set; }
     public bool IsOnline { get; set; } = false;
@@ -17,7 +17,7 @@ public class ApplicationUser : IdentityUser<Guid>
     public bool IsActive { get; set; } = true;
 
     public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
     public DateTime? DeletedAt { get; set; }
 }

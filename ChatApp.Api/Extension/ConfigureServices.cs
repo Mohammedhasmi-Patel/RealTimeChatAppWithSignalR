@@ -1,8 +1,10 @@
 using ChatApp.Application.DTO.Auth.Validators;
 using ChatApp.Application.DTO.FileStorage;
-using ChatApp.Application.ServiceContracts.Storage;
+using ChatApp.Application.RepositoryContracts.Auth;
+using ChatApp.Application.ServiceContracts.Auth;
+using ChatApp.Application.Services.Auth;
 using ChatApp.Infrastructure.Database;
-using ChatApp.Infrastructure.Services;
+using ChatApp.Infrastructure.Repositories;
 using ChatApp.Infrastructure.UserModels;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +15,7 @@ public static class ConfigureServices
 {
     public static IServiceCollection ConfigureAllServices(this IServiceCollection service,IConfiguration configuration)
     {
+        service.AddHttpContextAccessor();
         service.AddControllers()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterUserRequestValidator>());
 
@@ -34,7 +37,8 @@ public static class ConfigureServices
             .AddDefaultTokenProviders();
         #endregion
 
-        service.AddScoped<IFileStorageService,FileStorageService>();
+        service.AddScoped<IAuthService, AuthService>();
+        service.AddScoped<IAuthRepository,AuthRepository>();
 
         return service;
     }

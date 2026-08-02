@@ -1,22 +1,19 @@
 using System.Net;
-using ChatApp.Api.Models;
+using ChatApp.Application.DTO.Common;
 using ChatApp.Application.Exceptions;
 using ChatApp.Domain.Entities;
 using ChatApp.Infrastructure.Database;
-using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp.Api.Middleware;
 
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IServiceScopeFactory serviceScopeFactory)
     {
         _next = next;
-        _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
     }
 
@@ -28,7 +25,6 @@ public class ExceptionMiddleware
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Unhandled exception occurred.");
             await HandleExceptionAsync(context, exception);
         }
     }
@@ -50,31 +46,35 @@ public class ExceptionMiddleware
 
         if (statusCode == (int)HttpStatusCode.InternalServerError)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            var errorLog = new ErrorLog
+            try
             {
-                Message = exception.Message,
-                StackTrace = exception.StackTrace,
-                Source = exception.Source,
-                TargetSite = exception.TargetSite?.ToString(),
-                InnerException = exception.InnerException?.Message,
-                CreatedAt = DateTime.UtcNow
-            };
+                using var scope = _serviceScopeFactory.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            await dbContext.ErrorLogs.AddAsync(errorLog);
-            await dbContext.SaveChangesAsync();
+                var errorLog = new ErrorLog
+                {
+                    Message = exception.Message,
+                    StackTrace = exception.StackTrace,
+                    Source = exception.Source,
+                    TargetSite = exception.TargetSite?.ToString(),
+                    InnerException = exception.InnerException?.Message,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                await dbContext.ErrorLogs.AddAsync(errorLog);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
-        var errorDetails = new ErrorDetails
-        {
-            StatusCode = statusCode,
-            Message = exception.Message,
-            Details = exception.StackTrace,
-            TraceId = context.TraceIdentifier
-        };
+        var responseMessage = statusCode == (int)HttpStatusCode.InternalServerError
+            ? "Internal Server Error"
+            : exception.Message;
 
-        await context.Response.WriteAsJsonAsync(errorDetails);
+        var response = ApiResponse<object>.FailureResponse(statusCode, responseMessage);
+        await context.Response.WriteAsJsonAsync(response);
     }
 }

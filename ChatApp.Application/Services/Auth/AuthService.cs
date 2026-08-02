@@ -21,7 +21,8 @@ public class AuthService : IAuthService
 
         if (!result.Success)
         {
-            throw new BadRequestException("Something went wrong while adding the user");
+            string message = result.Message;
+            throw new BadRequestException(message);
         }
         return ApiResponse<object>.SuccessResponse(null,201,"User created successfully.");
     }

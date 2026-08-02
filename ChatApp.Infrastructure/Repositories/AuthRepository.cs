@@ -2,7 +2,7 @@ using ChatApp.Application.DTO.Auth.Requests;
 using ChatApp.Application.DTO.Auth.Response;
 using ChatApp.Application.Helpers;
 using ChatApp.Application.RepositoryContracts.Auth;
-using ChatApp.Application.ServiceContracts.Storage;
+using ChatApp.Domain.Enum;
 using ChatApp.Infrastructure.UserModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,37 +12,26 @@ namespace ChatApp.Infrastructure.Repositories;
 public class AuthRepository : IAuthRepository
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IFileStorageService _fileStorageService;
 
-    public AuthRepository(UserManager<ApplicationUser> userManager, IFileStorageService fileStorageService)
+    public AuthRepository(UserManager<ApplicationUser> userManager)
     {
         _userManager = userManager;
-        _fileStorageService = fileStorageService;
     }
 
     public async Task<AddUserResponse> AddUserAsync(RegisterUserRequest request)
     {
         string avatarUrl = string.Empty;
 
-        if (request.Avatar is not null)
+        if (await EmailExistsAsync(request.Email))
         {
-            var uploadRequest = FileStorageHelper.BuildFileUploadRequest("avatar",2*1024*1024,["jpg","jpeg","webp"]);
-
-            var fileUploadResult = await _fileStorageService.UploadAsync(request.Avatar, uploadRequest);
-
-            if (!fileUploadResult.Success)
+            return new AddUserResponse
             {
-                return new AddUserResponse()
-                {
-                    Success = false,
-                    Message = "Something went wrong while adding user"
-                };
-            }
-
-            avatarUrl = fileUploadResult.Url ?? fileUploadResult.FilePath ?? string.Empty;
+                Success = false,
+                Message = "Email already exists."
+            };
         }
 
-        var user = new ApplicationUser()
+        var user = new ApplicationUser
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
@@ -50,13 +39,32 @@ public class AuthRepository : IAuthRepository
             Email = request.Email,
             UserName = await GenerateUserName(request.FirstName, request.LastName),
             IsActive = true,
-            CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
-        await _userManager.CreateAsync(user, request.Password);
+        var createResult = await _userManager.CreateAsync(user, request.Password);
+        if (!createResult.Succeeded)
+        {
+            return new AddUserResponse
+            {
+                Success = false,
+                Message = string.Join("; ", createResult.Errors.Select(error => error.Description))
+            };
+        }
 
-        return new AddUserResponse()
+        var roleResult = await _userManager.AddToRoleAsync(user, nameof(UserRoleEnum.User));
+        if (!roleResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(user);
+            return new AddUserResponse
+            {
+                Success = false,
+                Message = string.Join("; ", roleResult.Errors.Select(error => error.Description))
+            };
+        }
+
+        return new AddUserResponse
         {
             Success = true,
             Message = "User created successfully."
