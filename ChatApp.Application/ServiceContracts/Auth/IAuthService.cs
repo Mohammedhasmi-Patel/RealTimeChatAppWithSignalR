@@ -6,7 +6,7 @@ namespace ChatApp.Application.ServiceContracts.Auth;
 
 public interface IAuthService
 {
-    public Task<object> RegisterUserAsync(RegisterUserRequest request);
+    public Task<ApiResponse<object>> RegisterUserAsync(RegisterUserRequest request);
     public Task<ApiResponse<LoginUserResponse>> LoginUserAsync(LoginUserRequest request);
 
 }

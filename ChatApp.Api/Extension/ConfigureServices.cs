@@ -1,11 +1,10 @@
+using ChatApp.Api.Configuration;
 using ChatApp.Application.DTO.Auth.Validators;
 using ChatApp.Application.DTO.Common;
 using ChatApp.Application.DTO.FileStorage;
-using ChatApp.Application.RepositoryContracts.Auth;
 using ChatApp.Application.ServiceContracts.Auth;
 using ChatApp.Application.Services.Auth;
 using ChatApp.Infrastructure.Database;
-using ChatApp.Infrastructure.Repositories;
 using ChatApp.Infrastructure.UserModels;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
@@ -33,6 +32,9 @@ public static class ConfigureServices
                 })
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterUserRequestValidator>());
 
+        service.Configure<JwtConfiguration>(configuration.GetSection("JwtConfiguration"));
+        service.AddTransient<ITokenService,TokenService>();
+
         #region Swagger Stuff
         service.AddEndpointsApiExplorer();
         service.AddSwaggerGen();
@@ -41,7 +43,6 @@ public static class ConfigureServices
 
         #region file storage stuff
         service.Configure<FileUploadRequest>(configuration.GetSection("FileStorage"));
-        // service.AddScoped<IFileStorageService, LocalFileStorageService>();
 
         #endregion
         string databaseUrl = configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("Dburl not found");
@@ -52,7 +53,6 @@ public static class ConfigureServices
         #endregion
 
         service.AddScoped<IAuthService, AuthService>();
-        service.AddScoped<IAuthRepository,AuthRepository>();
 
         return service;
     }
